@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "dynamic_query"
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Wei-Ming Wu"]
@@ -21,18 +21,21 @@ Gem::Specification.new do |s|
     "README.md",
     "Rakefile",
     "app/assets/javascripts/dynamic_query.js",
+    "app/helpers/dynamic_query.erb",
+    "app/helpers/dynamic_query_helper.rb",
     "lib/dynamic_query.rb",
     "lib/dynamic_query/dynamic_query.erb",
     "lib/dynamic_query/helper.rb",
     "lib/dynamic_query/railtie.rb",
     "lib/dynamic_query/version.rb",
-    "lib/generators/dynamic_query_generator.rb"
+    "lib/generators/dynamic_query_generator.rb",
+    "lib/generators/helper_generator.rb"
   ]
   s.homepage = "http://github.com/wnameless/dynamic_query"
   s.licenses = ["Apache License, Version 2.0"]
   s.require_paths = ["lib"]
   s.rubygems_version = "1.8.24"
-  s.summary = "dynamic_query-0.1.0"
+  s.summary = "dynamic_query-0.1.1"
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
