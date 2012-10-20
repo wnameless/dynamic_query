@@ -2,6 +2,8 @@
 
 require 'rubygems'
 require 'bundler'
+require './lib/dynamic_query/version.rb'
+
 begin
   Bundler.setup(:default, :development)
 rescue Bundler::BundlerError => e
@@ -14,14 +16,16 @@ require 'rake'
 require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
+  gem.version = DynamicQuery::Version::STRING
   gem.name = "dynamic_query"
   gem.homepage = "http://github.com/wnameless/dynamic_query"
-  gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.license = "Apache License, Version 2.0"
+  gem.summary = "dynamic_query-#{gem.version}"
+  gem.description = %Q{A dynamic query gui for ActiveRecord}
   gem.email = "wnameless@gmail.com"
-  gem.authors = ["WMW"]
+  gem.authors = ["Wei-Ming Wu"]
   # dependencies defined in Gemfile
+  gem.files = Dir["{app,lib}/**/*"] + ["LICENSE.txt", "Rakefile", "README.md"]
 end
 Jeweler::RubygemsDotOrgTasks.new
 

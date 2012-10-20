@@ -1,0 +1,39 @@
+<%= form_tag(request.url, opt.merge(:style => 'text-align: center;')) %>
+  <% if panel %>
+  <table style="margin-left: auto; margin-right: auto;">
+    <% panel.select { |k, _| k =~ /^or_\d+$/ }.each_with_index do |(or_key, or_val), idx1| %>
+      <% or_val.each_with_index do |(and_key, and_val), idx2| %>
+      <tr>
+        <td>
+          <%= submit_tag '∇', :name => "query[add_or]", :style => 'color: purple;' if idx1 == 0 && idx2 == 0 %>
+          <%= submit_tag '-', :name => "query[remove_#{or_key}]", :style => 'color: red;' if idx1 != 0 && idx2 == 0 %>
+        </td>
+        <td><%= select_tag "query[#{or_key}][#{and_key}][column]", options_for_select(panel[:columns].keys, and_val[:column]) %></td>
+        <td><%= select_tag "query[#{or_key}][#{and_key}][operator]", options_for_select(OPERATOR, and_val[:operator]), :class => 'query_op' %></td>
+        <td>
+          <% if ['IS NULL', 'IS NOT NULL'].include? and_val[:operator] %>
+            <%= text_field_tag "query[#{or_key}][#{and_key}][value1]", '', :style => 'display: none;' %>
+          <% else %>
+            <%= text_field_tag "query[#{or_key}][#{and_key}][value1]", and_val[:value1] %>
+          <% end %>
+        </td>
+        <td>
+          <% if ['BETWEEN', 'NOT BETWEEN'].include? and_val[:operator] %>
+            <%= text_field_tag "query[#{or_key}][#{and_key}][value2]", and_val[:value2] %>
+          <% else %>
+            <%= text_field_tag "query[#{or_key}][#{and_key}][value2]", '', :style => 'display: none;' %>
+          <% end %>
+        </td>
+        <td>
+          <%= submit_tag '+', :name => "query[#{or_key}-and]", :style => 'color: blue;' if idx2 == 0 %>
+          <%= submit_tag 'x', :name => "query[#{or_key}-#{and_key}]", :style => 'color: green;' if idx2 != 0 %>
+        </td>
+      </tr>
+      <% end %>
+      <tr style="height: 10px;"></tr>
+    <% end %>
+  <% end %>
+  </table>
+  <br />
+  <%= submit_tag 'Query', :style => 'width: 150px;'%>
+</form>
