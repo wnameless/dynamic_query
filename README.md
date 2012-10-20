@@ -10,6 +10,9 @@ gem 'dynamic_query'
 
 ## rails generator
 rails g dynamic_query
+
+## you may skip this step unless you want to customize your own helper
+rails g dynamic_query:helper
 ```
 
 ## Basic usage of dynamic_query

@@ -1,4 +1,5 @@
 require 'dynamic_query/railtie' if defined?(Rails)
+require 'generators/helper_generator' if defined?(Rails)
 
 module DynamicQuery
   OPERATOR = ['=', '>', '>=', '<', '<=', '!=',
