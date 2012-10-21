@@ -1,4 +1,4 @@
-<%= form_tag(request.url, { :method => :get, :style => 'text-align: center;' }.merge(opt)) %>
+<%= form_tag(request.path, { :method => :get, :style => 'text-align: center;' }.merge(opt)) %>
   <% if panel %>
   <table style="margin-left: auto; margin-right: auto;">
     <% panel.select { |k, _| k =~ /^or_\d+$/ }.each_with_index do |(or_key, or_val), idx1| %>
