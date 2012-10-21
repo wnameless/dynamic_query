@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "dynamic_query"
-  s.version = "0.1.2"
+  s.version = "0.1.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Wei-Ming Wu"]
@@ -35,7 +35,7 @@ Gem::Specification.new do |s|
   s.licenses = ["Apache License, Version 2.0"]
   s.require_paths = ["lib"]
   s.rubygems_version = "1.8.24"
-  s.summary = "dynamic_query-0.1.2"
+  s.summary = "dynamic_query-0.1.3"
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
