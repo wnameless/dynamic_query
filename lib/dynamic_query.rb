@@ -86,26 +86,43 @@ module DynamicQuery
     def statement(query)
       query ||= { 'or_1' => { 'and_1' => { :column => '', :operator => '', :value1 => '', :value2 => '' } } }
       or_stat = []
-      query.select { |k, _| k =~ /^or_\d+$/ }.each do |or_key, or_val|
-        and_stat = []
+      query.select { |k, v| k =~ /^or_\d+$/ && v.kind_of?(Hash) }.each do |or_key, or_val|
+        and_stat = [[]]
         or_val.each do |and_key, and_val|
-          case and_val[:operator]
-          when '=', '>', '>=', '<', '<=', '!=', 'LIKE', 'NOT LIKE'
-            and_stat << "#{and_val[:column]} #{and_val[:operator]} '#{and_val[:value1]}'" unless and_val[:value1].blank?
-          when 'IN', 'NOT IN'
-            and_stat << "#{and_val[:column]} #{and_val[:operator]} (#{and_val[:value1].split(/,/).select { |word| !word.strip.empty? }.map { |word| "'" + word.strip + "'" }.join(',')})" unless and_val[:value1].delete(',').blank?
-          when 'BETWEEN', 'NOT BETWEEN'
-            and_stat << "#{and_val[:column]} #{and_val[:operator]} '#{and_val[:value1]}' AND '#{and_val[:value2]}'" unless and_val[:value1].blank? || and_val[:value2].blank?
-          when 'IS NULL', 'IS NOT NULL'
-            and_stat << "#{and_val[:column]} #{and_val[:operator]}"
+          if and_val.kind_of?(Hash) && @columns.include?(and_val[:column])
+            case and_val[:operator]
+            when '=', '>', '>=', '<', '<=', '!=', 'LIKE', 'NOT LIKE'
+              unless and_val[:value1].blank?
+                and_stat[0] << "#{and_val[:column]} #{and_val[:operator]} ?"
+                and_stat << and_val[:value1]
+              end
+            when 'IN', 'NOT IN'
+              unless and_val[:value1].delete(',').blank?
+                and_stat[0] << "#{and_val[:column]} #{and_val[:operator]} (?)"
+                and_stat << and_val[:value1].split(/,/).delete_if { |word| word.blank? }.map { |word| word.strip }
+              end
+            when 'BETWEEN', 'NOT BETWEEN'
+              unless and_val[:value1].blank? || and_val[:value2].blank?
+                and_stat[0] << "#{and_val[:column]} #{and_val[:operator]} ? AND ?"
+                and_stat << and_val[:value1] << and_val[:value2]
+              end
+            when 'IS NULL', 'IS NOT NULL'
+              and_stat[0] << "#{and_val[:column]} #{and_val[:operator]}"
+            end
           end
         end
-        
-        and_stat_str = and_stat.join(' AND ')
-        or_stat << "(#{and_stat_str})" unless and_stat_str.empty?
+              
+        and_stat[0] = and_stat[0].join(' AND ')
+        or_stat << and_stat unless and_stat[0].empty?
       end
-      
-      or_stat = or_stat.join(' OR ')
+        
+      or_stat.each { |and_stat| and_stat[0] = "(#{and_stat[0]})" }
+      stat = []; params = []
+      or_stat.each do |and_stat|
+        stat << and_stat.shift
+        params = params + and_stat
+      end
+      params.unshift(stat.join(' OR '))
     end
     
     
