@@ -75,21 +75,26 @@ module DynamicQuery
     
     def panel(query)
       query ||= { 'or_1' => { 'and_1' => { :column => '', :operator => '', :value1 => '', :value2 => '' } } }
-      add_and_condition(query)
-      add_or_condition(query)
-      remove_and_condition(query)
-      remove_or_condition(query)
-      query[:columns] = @columns
-      query
+      query = query.clone
+      action = query[:action]
+      
+      panel = filter_valid_info(query)
+      panel_action(panel, action)
+      panel[:columns] = @columns
+      
+      panel
     end
     
     def statement(query)
       query ||= { 'or_1' => { 'and_1' => { :column => '', :operator => '', :value1 => '', :value2 => '' } } }
+      query = query.clone
+      query = filter_valid_info(query)
+      
       or_stat = []
-      query.select { |k, v| k =~ /^or_\d+$/ && v.kind_of?(Hash) }.each do |or_key, or_val|
+      query.each do |or_key, or_val|
         and_stat = [[]]
         or_val.each do |and_key, and_val|
-          if and_val.kind_of?(Hash) && @columns.include?(and_val[:column])
+          if @columns.include?(and_val[:column])
             case and_val[:operator]
             when '=', '>', '>=', '<', '<=', '!=', 'LIKE', 'NOT LIKE'
               unless and_val[:value1].blank?
@@ -129,59 +134,49 @@ module DynamicQuery
     private
     
     
-    def remove_or_condition(query)
-      query.each do |key, val|
-        if key =~ /^remove_or_\d+$/
-          query.delete("or_#{key.match(/\d+/)[0]}")
-          break
-        end
-      end
-    end
-    
-    def remove_and_condition(query)
-      query.each do |key, val|
-        if key =~ /^or_\d+-and_\d+$/
-          query["or_#{key.scan(/\d+/)[0]}"].delete("and_#{key.scan(/\d+/)[1]}")
-          break
-        end
-      end
-    end
-    
-    def add_or_condition(query)
-      or_key = nil
+    def filter_valid_info(query)
+      output = {}
       
-      query.each do |key, val|
-        if key =~ /^add_or$/
-          or_key = get_new_or_condition_key(query)
-          break
+      query.each do |or_key, or_val|
+        if or_key =~ /^or_\d+$/ && or_val.kind_of?(Hash)
+          or_val.each do |and_key, and_val|
+            if and_key =~ /^and_\d+$/ && and_val.kind_of?(Hash) &&
+              (['column', 'operator', 'value1', 'value2'] - and_val.keys.map { |k| k.to_s }).empty?
+               output[or_key] ||= {}; output[or_key][and_key] ||= {}
+               output[or_key][and_key] = and_val
+            end
+          end
         end
       end
       
-      if or_key
-        query[or_key] = {}
-        query[or_key]['and_1'] = { :column => '', :operator => '', :value1 => '', :value2 => '' }
-      end
+      output
     end
     
-    
-    def add_and_condition(query)
-      query.each do |key, val|
-        if key =~ /^or_\d+-and$/
-          and_key = get_new_and_condition_key(query["or_#{key.match(/\d+/)[0]}"])
-          query["or_#{key.match(/\d+/)[0]}"][and_key] = { :column => '', :operator => '', :value1 => '', :value2 => '' }
-          break
-        end
-      end
+    def panel_action(panel, action)
+      case action.keys.first
+      when /^add_or$/
+        or_key = get_new_or_condition_key(panel)
+        panel[or_key] = { 'and_1' => { :column => '', :operator => '', :value1 => '', :value2 => '' } }
+      when /^remove_or_\d+/
+        panel.delete("or_#{action.keys.first.match(/\d+/)[0]}")
+      when /add_and_to_or_\d+/
+        or_key = "or_#{action.keys.first.match(/\d+/)[0]}"
+        and_key = get_new_and_condition_key(panel[or_key])
+        panel[or_key][and_key] = { :column => '', :operator => '', :value1 => '', :value2 => '' }  
+      when /remove_and_\d+_from_or_\d+/
+        or_key = "or_#{action.keys.first.scan(/\d+/)[1]}"
+        and_key = "and_#{action.keys.first.scan(/\d+/)[0]}"
+        panel[or_key].delete(and_key) if panel[or_key]
+      end if action.kind_of?(Hash)
     end
     
-    def get_new_or_condition_key(query)
-      count = query.keys.select { |i| i =~ /\d+$/ }.map { |key| key.match(/\d+/)[0].to_i }.max.to_i + 1
-      p count
+    def get_new_or_condition_key(or_conditions)
+      count = or_conditions.keys.map { |key| key.match(/\d+/)[0].to_i }.max.to_i + 1
       "or_#{count}"
     end
     
-    def get_new_and_condition_key(or_condition)
-      count = or_condition.keys.map { |key| key.match(/\d+/)[0].to_i }.max.to_i + 1
+    def get_new_and_condition_key(and_conditions)
+      count = and_conditions.keys.map { |key| key.match(/\d+/)[0].to_i }.max.to_i + 1
       "and_#{count}"
     end
   

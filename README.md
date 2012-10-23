@@ -12,6 +12,7 @@ gem 'dynamic_query'
 rails g dynamic_query
 
 ## you may skip this step unless you want to customize your own helper
+## Regenerate the helper after upgrade dynamic_query
 rails g dynamic_query:helper
 ```
 

@@ -5,8 +5,8 @@
       <% or_val.each_with_index do |(and_key, and_val), idx2| %>
       <tr>
         <td>
-          <%= submit_tag 'ǁ', :name => "query[add_or]", :style => 'color: purple;', :title => 'OR' if idx1 == 0 && idx2 == 0 %>
-          <%= submit_tag '-', :name => "query[remove_#{or_key}]", :style => 'color: red;' if idx1 != 0 && idx2 == 0 %>
+          <%= submit_tag 'ǁ', :name => "query[action][add_or]", :style => 'color: purple;', :title => 'OR' if idx1 == 0 && idx2 == 0 %>
+          <%= submit_tag '-', :name => "query[action][remove_#{or_key}]", :style => 'color: red;' if idx1 != 0 && idx2 == 0 %>
         </td>
         <td><%= select_tag "query[#{or_key}][#{and_key}][column]", options_for_select(panel[:columns].keys, and_val[:column]) %></td>
         <td><%= select_tag "query[#{or_key}][#{and_key}][operator]", options_for_select(DynamicQuery::OPERATOR, and_val[:operator]), :class => 'query_op' %></td>
@@ -25,8 +25,8 @@
           <% end %>
         </td>
         <td>
-          <%= submit_tag '+', :name => "query[#{or_key}-and]", :style => 'color: blue;', :title => 'AND' if idx2 == 0 %>
-          <%= submit_tag 'x', :name => "query[#{or_key}-#{and_key}]", :style => 'color: green;' if idx2 != 0 %>
+          <%= submit_tag '+', :name => "query[action][add_and_to_#{or_key}]", :style => 'color: blue;', :title => 'AND' if idx2 == 0 %>
+          <%= submit_tag 'x', :name => "query[action][remove_#{and_key}_from_#{or_key}]", :style => 'color: green;' if idx2 != 0 %>
         </td>
       </tr>
       <% end %>
