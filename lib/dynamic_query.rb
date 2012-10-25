@@ -58,7 +58,7 @@ module DynamicQuery
       
       unless @reveal_keys
         @columns.keys.each do |key|
-          @columns.delete(key) if key =~ /.id$/ || key =~ /_id$/
+          @columns.delete(key) if key =~ /\.id$/ || key =~ /_id$/
         end
       end
       
@@ -80,7 +80,7 @@ module DynamicQuery
       
       panel = filter_valid_info(query)
       panel_action(panel, action)
-      panel[:columns] = @columns
+      panel[:columns] = @columns.clone
       
       panel
     end
@@ -157,13 +157,13 @@ module DynamicQuery
       when /^add_or$/
         or_key = get_new_or_condition_key(panel)
         panel[or_key] = { 'and_1' => { :column => '', :operator => '', :value1 => '', :value2 => '' } }
-      when /^remove_or_\d+/
+      when /^remove_or_\d+$/
         panel.delete("or_#{action.keys.first.match(/\d+/)[0]}")
-      when /add_and_to_or_\d+/
+      when /^add_and_to_or_\d+$/
         or_key = "or_#{action.keys.first.match(/\d+/)[0]}"
         and_key = get_new_and_condition_key(panel[or_key])
         panel[or_key][and_key] = { :column => '', :operator => '', :value1 => '', :value2 => '' }  
-      when /remove_and_\d+_from_or_\d+/
+      when /^remove_and_\d+_from_or_\d+$/
         or_key = "or_#{action.keys.first.scan(/\d+/)[1]}"
         and_key = "and_#{action.keys.first.scan(/\d+/)[0]}"
         panel[or_key].delete(and_key) if panel[or_key]
