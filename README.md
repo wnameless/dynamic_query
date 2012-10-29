@@ -22,7 +22,7 @@ rails g dynamic_query:helper
 ## controller of Rails 3
 dq = dynamic_query(:list, :entry) # list models you wish to be queried. e.g. List => :list, AbcDef => :abc_def
 @panel = dq.panel(params[:query])
-@lists = List.includes(:entries).where(dq.statement(params[:query]))
+@lists = List.includes(:entries).where(dq.statement(params[:query])).all
 
 ## render query panel in the view:
 <%= dynamic_query @panel %>
