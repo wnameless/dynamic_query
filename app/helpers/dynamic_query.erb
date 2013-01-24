@@ -8,7 +8,7 @@
           <%= submit_tag 'ǁ', :name => "query[action][add_or]", :style => 'color: purple;', :title => 'OR' if idx1 == 0 && idx2 == 0 %>
           <%= submit_tag '-', :name => "query[action][remove_#{or_key}]", :style => 'color: red;' if idx1 != 0 && idx2 == 0 %>
         </td>
-        <td><%= select_tag "query[#{or_key}][#{and_key}][column]", options_for_select(panel[:columns].keys, and_val[:column]) %></td>
+        <td><%= select_tag "query[#{or_key}][#{and_key}][column]", options_for_select(panel[:columns], and_val[:column]) %></td>
         <td><%= select_tag "query[#{or_key}][#{and_key}][operator]", options_for_select(DynamicQuery::OPERATOR, and_val[:operator]), :class => 'query_op' %></td>
         <td>
           <% if ['IS NULL', 'IS NOT NULL'].include? and_val[:operator] %>

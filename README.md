@@ -39,6 +39,10 @@ dq = dynamic_query(:list, :entry, :reveal_keys => true)
 dq = dynamic_query(:list, :entry, :accept => { :list => [:name], :entry => [:title, :priority] }, :reject => { :entry => [:title] })
 # only lists.name and entries.priority can be seen on the query panel because the white list gets higher precedence than the black list
 
+# column display names can be defined by following options
+dq = dynamic_query(:list, :entry, :alias => { 'lists.name' =>  'Full Name' })
+# those names are used in the html select tag
+
 ## query panel is simply a rails form_tag which means it can accept the same hash options
 <%= dynamic_query @panel, :remote => true %>
 ```
