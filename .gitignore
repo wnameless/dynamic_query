@@ -53,3 +53,9 @@ pkg
 
 # For eclipse
 .project
+
+# For dummy Rails application
+test/dummy/db/*.sqlite3
+test/dummy/log/*.log
+test/dummy/tmp/
+test/dummy/.sass-cache
