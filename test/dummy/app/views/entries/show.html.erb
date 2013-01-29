@@ -1,0 +1,30 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Title:</b>
+  <%= @entry.title %>
+</p>
+
+<p>
+  <b>Description:</b>
+  <%= @entry.description %>
+</p>
+
+<p>
+  <b>Deadline:</b>
+  <%= @entry.deadline %>
+</p>
+
+<p>
+  <b>Priority:</b>
+  <%= @entry.priority %>
+</p>
+
+<p>
+  <b>List:</b>
+  <%= @entry.list %>
+</p>
+
+
+<%= link_to 'Edit', edit_list_entry_path(@entry) %> |
+<%= link_to 'Back', list_entries_path %>

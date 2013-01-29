@@ -10,6 +10,8 @@ group :development do
   gem "rdoc", "~> 3.12"
   gem "bundler", "~> 1.2.3"
   gem "jeweler", "~> 1.8.4"
+  gem "sqlite3", "~> 1.3.7"
 end
 
-gem 'rails', "~> 3.2.0"
+gem "jquery-rails", "~> 2.2.0"
+gem "rails", "~> 3.2.0"

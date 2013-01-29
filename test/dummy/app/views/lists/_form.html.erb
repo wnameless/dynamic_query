@@ -1,0 +1,6 @@
+<%= form_for(@list, :remote => true) do |f| %>
+  <%= show_errors(@list).html_safe %>
+
+  <%= f.text_field :name %>
+  <%= f.submit %>
+<% end %>

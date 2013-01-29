@@ -1,0 +1,16 @@
+<%= form_for [@list, @entry], :remote => true do |f| %>
+  <%= show_errors(@entry) %>
+  
+  <%= f.text_field :title, :size => 48 %>
+  <%= f.select :priority, { :casual => '1', :normal => '2', :urgent => '3' }, :selected => @entry.priority || 2 %>
+  <%= submit_tag @entry.id ? 'Update' : 'Add' %>
+  
+  <div style="text-align: left; width: 400px;">
+    <label class="add_des">+description</label> | <label id="add_ddl">+deadline</label>
+    <span id="datepicker" style="<%=  'display: none;' unless @entry.id %>">
+      <input id="entry_deadline" name="entry[deadline]" type="text" readonly="readonly" size="10" value="<%= @entry.deadline %>">
+    </span>
+    <br />
+    <%= f.text_area :description, :cols => 42, :rows => 4, :style => @entry.id ? 'resize: none;' : 'resize: none; display: none;' %>
+  </div>
+<% end %>

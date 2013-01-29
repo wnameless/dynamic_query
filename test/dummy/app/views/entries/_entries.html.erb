@@ -1,0 +1,26 @@
+<table class="pretty">
+  <tr>
+    <th><%= sortable 'priority' %></th>
+    <th><%= sortable 'title' %></th>
+    <th><%= sortable 'deadline' %></th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @entries.each_with_index do |entry, i| %>
+  <tr>
+    <td align="center"><%= color_priority entry.priority %></td>
+    <td><%= entry.title %></td>
+    <td><%= entry.deadline %></td>
+    <td><button class="des_toggle" des_pos="<%= i %>">∨</button></td>
+    <td><%= link_to "Edit", edit_list_entry_path(@list, entry), :method => :get, :remote => true %></td>
+    <td><%= link_to "Delete", list_entry_path(@list, entry), :method => :delete, :remote => true, :data => { :confirm => 'Are you sure?' } %></td>
+  </tr>
+  <tr id="<%= i %>" style="display: none;">
+    <td colspan="6">
+      <textarea disabled="true" style="resize: none; width: 330px;"><%= entry.description %></textarea>
+    </td>
+  </tr>
+<% end %>
+</table>
