@@ -27,13 +27,21 @@ module DynamicQuery
         opt = {}
       end
       
+      models.map! do |m|
+        if [String, Symbol].include? m.class
+          m.to_s.split(/_/).map { |word| word.capitalize }.join.constantize
+        else
+          m
+        end       
+      end
+      
       opt.each do |key, val|
         @reveal_keys = true if key == :reveal_keys && val
         
         if key == :accept
           val.each do |model, columns|
             if models.include? model
-              model = model.to_s.split(/_/).map { |word| word.capitalize }.join.constantize
+              # model = model.to_s.split(/_/).map { |word| word.capitalize }.join.constantize
               columns.each { |col|  @white_list << "#{model.table_name}.#{col}" }
             end
           end
@@ -42,7 +50,7 @@ module DynamicQuery
         if key == :reject
           val.each do |model, columns|
             if models.include? model
-              model = model.to_s.split(/_/).map { |word| word.capitalize }.join.constantize
+              # model = model.to_s.split(/_/).map { |word| word.capitalize }.join.constantize
               columns.each { |col|  @black_list << "#{model.table_name}.#{col}" }
             end
           end
@@ -55,14 +63,14 @@ module DynamicQuery
       
       @columns = {}
       models.each do |model|
-        model = model.to_s.split(/_/).map { |word| word.capitalize }.join.constantize
+        # model = model.to_s.split(/_/).map { |word| word.capitalize }.join.constantize
         model = Hash[model.columns.map { |col| ["#{model.table_name}.#{col.name}"] * 2 }]
         @columns.merge! model
       end
       
       @column_types = {}
       models.each do |model|
-        model = model.to_s.split(/_/).map { |word| word.capitalize }.join.constantize
+        # model = model.to_s.split(/_/).map { |word| word.capitalize }.join.constantize
         model = Hash[model.columns.map { |col| ["#{model.table_name}.#{col.name}", col.type] }]
         @column_types.merge! model
       end

@@ -21,6 +21,9 @@ rails g dynamic_query:helper
 ``` ruby
 ## controller of Rails 3
 dq = dynamic_query(:list, :entry) # list models you wish to be queried. e.g. List => :list, AbcDef => :abc_def
+# Since version 0.4.0, you can use model's names directly.
+dq = dynamic_query(List, Entry)
+
 @panel = dq.panel(params[:query])
 @lists = List.includes(:entries).where(dq.statement(params[:query])).all
 
@@ -34,10 +37,14 @@ dq = dynamic_query(:list, :entry) # list models you wish to be queried. e.g. Lis
 # columns with name 'id' or name ended with '_id' are hided by default
 # :reveal_keys => true reveals those columns in the query panel
 dq = dynamic_query(:list, :entry, :reveal_keys => true)
+# Works for version >= 0.4.0
+dq = dynamic_query(List, Entry, :reveal_keys => true)
 
 # a white list or a black list can be defined by following options
 dq = dynamic_query(:list, :entry, :accept => { :list => [:name], :entry => [:title, :priority] }, :reject => { :entry => [:title] })
 # only lists.name and entries.priority can be seen on the query panel because the white list gets higher precedence than the black list
+# Works for version >= 0.4.0
+dq = dynamic_query(List, Entry, :accept => { List => [:name], Entry => [:title, :priority] }, :reject => { Entry => [:title] })
 
 # column display names can be defined by following options
 dq = dynamic_query(:list, :entry, :alias => { 'lists.name' =>  'Full Name' })
