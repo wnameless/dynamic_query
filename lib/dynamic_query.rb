@@ -1,5 +1,7 @@
 require 'dynamic_query/railtie' if defined?(Rails)
 require 'generators/helper_generator' if defined?(Rails)
+require 'dynamic_query/combine_query'
+require 'dynamic_query/validator'
 
 module DynamicQuery
   OPERATOR = ['=', '>', '>=', '<', '<=', '!=',
@@ -11,6 +13,8 @@ module DynamicQuery
   end
               
   class DynamicQueryInstance
+    include CombineQuery, Validator
+    
     def initialize(*models, opt)
       @reveal_keys = false
       @white_list = []
@@ -163,24 +167,6 @@ module DynamicQuery
     end
     
     private
-    def filter_valid_info(query)
-      output = {}
-      
-      query.each do |or_key, or_val|
-        if or_key =~ /^or_\d+$/ && or_val.kind_of?(Hash)
-          or_val.each do |and_key, and_val|
-            if and_key =~ /^and_\d+$/ && and_val.kind_of?(Hash) &&
-              (['column', 'operator', 'value1', 'value2'] - and_val.keys.map { |k| k.to_s }).empty?
-               output[or_key] ||= {}; output[or_key][and_key] ||= {}
-               output[or_key][and_key] = and_val
-            end
-          end
-        end
-      end
-      
-      output
-    end
-    
     def panel_action(panel, action)
       case action.keys.first
       when /^add_or$/

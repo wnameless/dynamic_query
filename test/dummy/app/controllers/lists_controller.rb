@@ -2,7 +2,8 @@ class ListsController < ApplicationController
   def index
     dq = dynamic_query(List, Entry, :alias => { 'lists.name' => 'Full Name' })
     @panel = dq.panel(params[:query])
-    @lists = List.where(dq.statement(params[:query])).all
+    @conditions = dq.conditions(params[:query])
+    @lists = List.includes(:entries).where(dq.statement(params[:query])).all
     @list = List.new
   end
 

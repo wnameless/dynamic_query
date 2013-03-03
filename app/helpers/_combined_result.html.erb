@@ -1,0 +1,68 @@
+<% completed_row = result.first %>
+
+<center id="combined_result">
+  
+<table id="combined_result_table" style="text-align: center">
+<% if completed_row %>
+  <tr>
+    <%= completed_row.map { |record|
+      "<th colspan='#{record.attributes.size}'>#{record.table_name}</th>" }.join.html_safe %>
+  </tr>
+  <tr>
+    <%= completed_row.map{ |rec|
+      rec.attributes.map { |k, _| k } }.flatten.map { |col| "<th>#{col}</th>" }.join.html_safe %>
+  </tr>
+<% end %>
+  <% result.each do |row| %>
+  <tr>
+    <% row.map { |rec| rec.attributes.map { |k ,v| v } }.flatten.each do |col| %>
+    <td><%= col %></td>
+    <% end %>
+  </tr>
+  <% end %>
+</table>
+
+<button id="table2csv">Download CSV</button>
+
+<script>
+  var regulateCSVCell = function( cell ) {
+    if ( cell.indexOf( ',' ) == -1 ) {
+      return cell;
+    }
+    return '"' + cell + '"';
+  };
+
+  var ary2CSV = function( ary ) {
+    csv = '';
+    for( var row in ary ) {
+      for( var col in ary[row] ) {
+        csv += regulateCSVCell( ary[row][col] ) + ','
+      }
+      csv += "\n"
+    }
+    return csv;
+  };
+  
+  var saveCSV = function( csv ) {
+    var href = 'data:application/csv;charset=utf-8,'
+    href += encodeURIComponent( csv );
+    window.open( href );
+  };
+
+  $( '#table2csv' ).on( 'click', function() {
+    var table = [];
+    $( '#combined_result_table tr' ).each( function( index ) {
+      if ( index > 0 ) {
+        var row = [];
+        $( this ).children().each( function() {
+          row.push( $( this ).text() );
+        });
+        table.push( row );
+      }
+    });
+    
+    saveCSV( ary2CSV( table ) );
+  });
+</script>
+
+</center>

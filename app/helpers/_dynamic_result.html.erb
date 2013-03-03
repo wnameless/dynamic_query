@@ -1,0 +1,55 @@
+<center>
+  <table id="dynamic_result_table">
+    <% if result.first %>
+    <tr>
+      <%= result.first.attributes.map { |k, _| "<th>#{k}</th>" }.join.html_safe %>
+    </tr>
+    <% end %>
+    <% result.each do |patient| %>
+    <tr>
+      <%= patient.attributes.map { |_, v| "<td>#{v}</td>" }.join.html_safe %>
+    </tr>
+    <% end if result %>
+  </table>
+  
+  <button id="table2csv">Download CSV</button>
+  
+  <script>
+    var regulateCSVCell = function( cell ) {
+      if ( cell.indexOf( ',' ) == -1 ) {
+        return cell;
+      }
+      return '"' + cell + '"';
+    };
+  
+    var ary2CSV = function( ary ) {
+      csv = '';
+      for( var row in ary ) {
+        for( var col in ary[row] ) {
+          csv += regulateCSVCell( ary[row][col] ) + ','
+        }
+        csv += "\n"
+      }
+      return csv;
+    };
+    
+    var saveCSV = function( csv ) {
+      var href = 'data:application/csv;charset=utf-8,'
+      href += encodeURIComponent( csv );
+      window.open( href );
+    };
+  
+    $( '#table2csv' ).on( 'click', function() {
+      var table = [];
+      $( '#dynamic_result_table tr' ).each( function( index ) {
+        var row = [];
+        $( this ).children().each( function() {
+          row.push( $( this ).text() );
+        });
+        table.push( row );
+      });
+      
+      saveCSV( ary2CSV( table ) );
+    });
+  </script>
+</center>

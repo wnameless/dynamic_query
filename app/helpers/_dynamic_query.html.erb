@@ -1,11 +1,14 @@
+<% or_disable = opt[:or_disable]; opt.delete(:or_disable) %>
+
 <%= form_tag(request.path, { :method => :get, :style => 'text-align: center;' }.merge(opt)) %>
+  <%= html %>
   <% if panel %>
   <table style="margin-left: auto; margin-right: auto;">
     <% panel.select { |k, _| k =~ /^or_\d+$/ }.each_with_index do |(or_key, or_val), idx1| %>
       <% or_val.each_with_index do |(and_key, and_val), idx2| %>
       <tr>
         <td>
-          <%= submit_tag 'ǁ', :name => "query[action][add_or]", :style => 'color: purple;', :title => 'OR' if idx1 == 0 && idx2 == 0 %>
+          <%= submit_tag 'ǁ', :name => "query[action][add_or]", :style => 'color: purple;', :title => 'OR' if idx1 == 0 && idx2 == 0 and !or_disable %>
           <%= submit_tag '-', :name => "query[action][remove_#{or_key}]", :style => 'color: red;' if idx1 != 0 && idx2 == 0 %>
         </td>
         <td><%= select_tag "query[#{or_key}][#{and_key}][column]", options_for_select(panel[:columns], and_val[:column]) %></td>
@@ -34,6 +37,24 @@
     <% end %>
   <% end %>
   </table>
-  <br />
   <%= submit_tag 'Query', :style => 'width: 150px;'%>
 </form>
+
+<script>
+  $('.query_op').on('change', function() {
+    var _ref, _ref1;
+    if ((_ref = $(this).val()) === 'IS NULL' || _ref === 'IS NOT NULL') {
+      $('#' + $(this).attr('id').split(/_/).slice(0, -1).join('_') + '_value1').val('');
+      $('#' + $(this).attr('id').split(/_/).slice(0, -1).join('_') + '_value2').val('');
+      $('#' + $(this).attr('id').split(/_/).slice(0, -1).join('_') + '_value1').hide();
+      return $('#' + $(this).attr('id').split(/_/).slice(0, -1).join('_') + '_value2').hide();
+    } else if ((_ref1 = $(this).val()) === 'BETWEEN' || _ref1 === 'NOT BETWEEN') {
+      $('#' + $(this).attr('id').split(/_/).slice(0, -1).join('_') + '_value1').show();
+      return $('#' + $(this).attr('id').split(/_/).slice(0, -1).join('_') + '_value2').show();
+    } else {
+      $('#' + $(this).attr('id').split(/_/).slice(0, -1).join('_') + '_value1').show();
+      $('#' + $(this).attr('id').split(/_/).slice(0, -1).join('_') + '_value2').val('');
+      return $('#' + $(this).attr('id').split(/_/).slice(0, -1).join('_') + '_value2').hide();
+    }
+  });
+</script>
