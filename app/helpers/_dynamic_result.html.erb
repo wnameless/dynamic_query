@@ -26,7 +26,11 @@
       csv = '';
       for( var row in ary ) {
         for( var col in ary[row] ) {
-          csv += regulateCSVCell( ary[row][col] ) + ','
+          if ( col == 0 ) {
+            csv += regulateCSVCell( ary[row][col] )
+          } else {
+            csv += ',' + regulateCSVCell( ary[row][col] )
+          }
         }
         csv += "\n"
       }
