@@ -31,14 +31,19 @@ module DynamicQuery
       cond
     end
     
-    def combine_query(query, relations)
+    def combine_query(query, relations, opts = {})
       conds = conditions(query).first || {}
       models = relations.each_slice(3).map { |sec| sec.first }
       foreign_keys = relations - models
       
       selected_records = filter_conditioned_records(models, foreign_keys, conds)
       selected_records = remove_unlinked_records(selected_records, foreign_keys)
-      join(selected_records, foreign_keys)
+      result = join(selected_records, foreign_keys)
+      
+      result.delete_if { |row| row.include? nil } unless opts[:accept_null]
+      result.map { |row| row.map { |rec| rec.attributes.keep_if { |k, _| k.to_s !~ /id$/ } } } unless opts[:reveal_id]
+      
+      result
     end
     
     private

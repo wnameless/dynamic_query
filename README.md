@@ -8,9 +8,6 @@ Installation:
 ## Gemfile for Rails 3
 gem 'dynamic_query'
 
-## rails generator
-rails g dynamic_query
-
 ## you may skip this step unless you want to customize your own helper
 ## Regenerate the helper after upgrade dynamic_query
 rails g dynamic_query:helper
@@ -29,6 +26,9 @@ dq = dynamic_query(List, Entry)
 
 ## render query panel in the view:
 <%= dynamic_query @panel %>
+
+## render query result in the view:
+<%= dynamic_result @lists %>
 ```
 
 ## Advanced usage of dynamic_query
