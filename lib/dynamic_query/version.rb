@@ -1,4 +1,4 @@
-class DynamicQuery
+module DynamicQuery
   MAJOR = 0
   MINOR = 6
   PATCH = 0

@@ -6,3 +6,10 @@ source "http://rubygems.org"
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.
 gemspec
+
+group :development, :test do
+  gem "jquery-rails", "~> 2.2.0"
+  gem "will_paginate", "~> 3.0.0"
+  gem "sqlite3", "~> 1.3.7"
+  gem "mysql2", "~> 0.3.11"
+end

@@ -1,6 +1,6 @@
 require 'dynamic_query/railtie' if defined?(Rails)
 require 'generators/helper_generator' if defined?(Rails)
-require 'dynamic_query/combine_query'
+require 'dynamic_query/combined_query'
 require 'dynamic_query/validator'
 
 module DynamicQuery

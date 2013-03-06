@@ -2,7 +2,7 @@ require 'dynamic_query/validator'
 require 'dynamic_query/joiner'
 
 module DynamicQuery
-  module CombineQuery
+  module CombinedQuery
     include Validator, Joiner
     
     def conditions(query, table = nil)

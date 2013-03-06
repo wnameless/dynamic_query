@@ -1,0 +1,2 @@
+module JoinedQueryHelper
+end

@@ -1,4 +1,6 @@
 Dummy::Application.routes.draw do
+  get "joined_query/index"
+
   resources :lists do
     resources :entries
   end

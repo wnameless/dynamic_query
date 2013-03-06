@@ -1,0 +1,9 @@
+module Match
+  class R201Cd2009 < DbBase
+    self.table_name = 'r201_cd2009'
+    self.inheritance_column = 'ruby_type'
+    
+    attr_accessible :FEE_YM, :APPL_TYPE, :HOSP_ID, :APPL_DATE, :CASE_TYPE, :SEQ_NO, :CURE_ITEM_NO1, :CURE_ITEM_NO2, :CURE_ITEM_NO3, :CURE_ITEM_NO4, :FUNC_TYPE, :FUNC_DATE, :TREAT_END_DATE, :ID_BIRTHDAY, :ID, :CARD_SEQ_NO, :GAVE_KIND, :PART_NO, :ACODE_ICD9_1, :ACODE_ICD9_2, :ACODE_ICD9_3, :ICD_OP_CODE, :DRUG_DAY, :MED_TYPE, :PRSN_ID, :PHAR_ID, :DRUG_AMT, :TREAT_AMT, :TREAT_CODE, :DIAG_AMT, :DSVC_NO, :DSVC_AMT, :BY_PASS_CODE, :T_AMT, :PART_AMT, :T_APPL_AMT, :ID_SEX
+
+  end
+end

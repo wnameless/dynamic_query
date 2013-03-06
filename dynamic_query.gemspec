@@ -19,7 +19,9 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "rails", "~> 3.2.0"
   s.add_runtime_dependency "jquery-rails", "~> 2.2.0"
   
+  s.add_development_dependency "will_paginate"
   s.add_development_dependency "sqlite3", "~> 1.3.7"
+  s.add_development_dependency "mysql2", "~> 0.3.11"
   s.add_development_dependency "shoulda", "~> 3.3.2"
   s.add_development_dependency "rdoc", "~> 3.12"
   s.add_development_dependency "bundler", "~> 1.3"

@@ -1,0 +1,8 @@
+match:
+  -
+    db:
+      adapter: mysql2
+      database: match
+      host: 127.0.0.1
+      user: root
+      password:
