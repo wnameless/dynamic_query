@@ -1,5 +1,5 @@
 <center>
-  <table id="dynamic_result_table">
+  <table id="dynamic_result_table" style="text-align: center">
     <% if result.first %>
     <tr>
       <%= result.first.attributes.map { |k, _| "<th>#{k}</th>" }.join.html_safe %>
@@ -15,6 +15,30 @@
   <button id="table2csv">Download CSV</button>
   
   <script>
+    $( function() {
+      $( '#dynamic_result_table th' ).each( function(index) {
+        $( this ).on( 'click', function() {
+          var header = $("#dynamic_result_table tr > th:eq(" + index + ")");
+          console.log( header );
+          if ( header.text() == '*' ) {
+            header.text( header.attr( 'title' ) );
+            header.attr( 'title', '' );
+            $('#dynamic_result_table tr').find( "td:eq(" + index +")" ).each( function() {
+              $( this ).text( $( this ).attr( 'title' ) );
+              $( this ).attr( 'title', '' );
+            });
+          } else {
+            header.attr( 'title', header.text() );
+            header.text( '*' );
+            $('#dynamic_result_table tr').find( "td:eq(" + index +")" ).each( function() {
+              $( this ).attr( 'title', $( this ).text() );
+              $( this ).text( '' );
+            });
+          }
+        });
+      });
+    });
+  
     var regulateCSVCell = function( cell ) {
       if ( cell.indexOf( ',' ) == -1 ) {
         return cell;
@@ -56,4 +80,13 @@
       saveCSV( ary2CSV( table ) );
     });
   </script>
+  <% if params[:page] %>
+  <table>
+    <tr>
+      <td><%= link_to '<<',  params.merge(:page => params[:page].to_i > 2 ? params[:page].to_i - 1 : 1) %></td>
+      <td><label>Page </label><%= params[:page].to_i > 1 ? params[:page].to_i : 1 %></td>
+      <td><%= link_to '>>',  params.merge(:page => params[:page].to_i > 0 ? params[:page].to_i + 1 : 1) %></td>
+    </tr>
+  </table>
+  <% end %>
 </center>

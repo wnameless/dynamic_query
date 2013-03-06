@@ -13,39 +13,43 @@ module DynamicQuery
     DynamicQueryInstance.new(*models, opt)
   end
   
-  def multi_columns_join(from, *to_tables)
-    f = Arel::Table.new from.table_name
-    alias_counter = {}
-    table_aliases = {}
-    to_tables.each do |tt|
-      to_table_name = tt.first.table_name
-      t = Arel::Table.new to_table_name
-      table_aliases[to_table_name] ||= []
-      tt.drop(1).each do |mapping|
-        if alias_counter[to_table_name].nil?
-          alias_counter[to_table_name] = 0
-          table_aliases[to_table_name] << t
+  def joined_by_columns(from, *to_tables)
+    sql = ''
+    from_table = from.table_name
+    to_tables_count = Hash.new(0)
+    to_tables.each do |to|
+      to_table = to.first.table_name
+      if to_tables_count[to_table] == 0
+        sql << "INNER JOIN `#{to_table}` ON "
+        mappings = []
+        to.drop(1).each do |mapping|
+          if mapping.kind_of? Array
+            mappings << "`#{from_table}`.`#{mapping.first}` = `#{to_table}`.`#{mapping.last}`"
+          else
+            mappings << "`#{from_table}`.`#{mapping}` = `#{to_table}`.`#{mapping}`"
+          end
         end
-        alias_counter[to_table_name] += 1
-        table_aliases[to_table_name] << Arel::Table.new(to_table_name, :as => "#{to_table_name}_#{alias_counter[to_table_name]}")
+        sql << "(#{mappings.join(' AND ')})"
+        to_tables_count[to_table] += 1
+      else
+        sql << "INNER JOIN `#{to_table}` `#{to_table}_#{to_tables_count[to_table]}` ON "
+        mappings = []
+        to.drop(1).each do |mapping|
+          if mapping.kind_of? Array
+            mappings << "`#{from_table}`.`#{mapping.first}` = `#{to_table}_#{to_tables_count[to_table]}`.`#{mapping.last}`"
+          else
+            mappings << "`#{from_table}`.`#{mapping}` = `#{to_table}_#{to_tables_count[to_table]}`.`#{mapping}`"
+          end
+        end
+        sql << "(#{mappings.join(' AND ')})"
+        to_tables_count[to_table] += 1
       end
     end
-    
-    query = f.clone
-    to_tables.each do |tt|
-      to_table_name = tt.first.table_name
-      tt.drop(1).each do |mapping|
-        target = table_aliases[to_table_name].shift
-        if mapping.kind_of? Array
-          query = query.join(target).on( f[mapping.first].eq target[mapping.last] )
-        else
-          query = query.join(target).on( f[mapping].eq target[mapping] )
-        end
-      end
-    end
-    
-    sql = query.project(Arel.sql('*')).to_sql
-    sql[sql.index('INNER JOIN')..-1]
+    sql
+  end
+  
+  def all_columns_in(*models)
+    models.map { |m| m.columns.map { |col| "#{m.table_name}.#{col.name}" } }.flatten.join ', '
   end
               
   class DynamicQueryInstance
