@@ -13,7 +13,7 @@ module DynamicQuery
     DynamicQueryInstance.new(*models, opt)
   end
   
-  def joined_by_columns(from, *to_tables)
+  def tables_joined_by(from, *to_tables)
     sql = ''
     from_table = from.table_name
     to_tables_count = Hash.new(0)
@@ -51,7 +51,7 @@ module DynamicQuery
   def all_columns_in(*models)
     models.map { |m| m.columns.map { |col| "#{m.table_name}.#{col.name}" } }.flatten.join ', '
   end
-              
+    
   class DynamicQueryInstance
     include CombinedQuery, Validator
     

@@ -16,11 +16,30 @@
   
   <script>
     $( function() {
+      if ( sessionStorage.getItem( 'toggle_columns' ) == null ) {
+        sessionStorage.setItem( 'toggle_columns', '[]' )
+      }
+      console.log( sessionStorage.getItem( 'toggle_columns' ) );
+      var hide_ary = jQuery.parseJSON( sessionStorage.getItem( 'toggle_columns' ) );
+      
+      $.each( hide_ary, function(index, value) {
+        var header = $("#dynamic_result_table tr > th:eq(" + value + ")");
+        header.attr( 'title', header.text() );
+        header.text( '●' );
+        $('#dynamic_result_table tr').find( "td:eq(" + value +")" ).each( function() {
+          $( this ).attr( 'title', $( this ).text() );
+          $( this ).text( '' );
+        });
+      });
+      
       $( '#dynamic_result_table th' ).each( function(index) {
         $( this ).on( 'click', function() {
           var header = $("#dynamic_result_table tr > th:eq(" + index + ")");
-          console.log( header );
-          if ( header.text() == '*' ) {
+          if ( header.text() == '●' ) {
+            var hide_ary = jQuery.parseJSON( sessionStorage.getItem( 'toggle_columns' ) );
+            hide_ary.splice( hide_ary.indexOf(index), 1 );
+            sessionStorage.setItem( 'toggle_columns', JSON.stringify( hide_ary ) )
+            
             header.text( header.attr( 'title' ) );
             header.attr( 'title', '' );
             $('#dynamic_result_table tr').find( "td:eq(" + index +")" ).each( function() {
@@ -28,8 +47,12 @@
               $( this ).attr( 'title', '' );
             });
           } else {
+            var hide_ary = jQuery.parseJSON( sessionStorage.getItem( 'toggle_columns' ) );
+            hide_ary.push( index );
+            sessionStorage.setItem( 'toggle_columns', JSON.stringify( hide_ary ) )
+            
             header.attr( 'title', header.text() );
-            header.text( '*' );
+            header.text( '●' );
             $('#dynamic_result_table tr').find( "td:eq(" + index +")" ).each( function() {
               $( this ).attr( 'title', $( this ).text() );
               $( this ).text( '' );
@@ -80,13 +103,4 @@
       saveCSV( ary2CSV( table ) );
     });
   </script>
-  <% if params[:page] %>
-  <table>
-    <tr>
-      <td><%= link_to '<<',  params.merge(:page => params[:page].to_i > 2 ? params[:page].to_i - 1 : 1) %></td>
-      <td><label>Page </label><%= params[:page].to_i > 1 ? params[:page].to_i : 1 %></td>
-      <td><%= link_to '>>',  params.merge(:page => params[:page].to_i > 0 ? params[:page].to_i + 1 : 1) %></td>
-    </tr>
-  </table>
-  <% end %>
 </center>

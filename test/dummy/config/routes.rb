@@ -1,4 +1,6 @@
 Dummy::Application.routes.draw do
+  get "mass_query/index"
+
   get "joined_query/index"
 
   resources :lists do
