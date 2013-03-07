@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.name = "dynamic_query"
   s.version = DynamicQuery::VERSION
   s.authors = ["Wei-Ming Wu"]
-  s.date = "2013-03-05"
+  s.date = "2013-03-07"
   s.description = "A dynamic query gui for ActiveRecord"
   s.email = "wnameless@gmail.com"
   
