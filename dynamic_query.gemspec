@@ -1,12 +1,13 @@
 $:.push File.expand_path("../lib", __FILE__)
 
 require "dynamic_query/version"
+require "date"
 
 Gem::Specification.new do |s|
   s.name = "dynamic_query"
   s.version = DynamicQuery::VERSION
   s.authors = ["Wei-Ming Wu"]
-  s.date = "2013-03-07"
+  s.date = "#{Date.today.to_s}"
   s.description = "A dynamic query gui for ActiveRecord"
   s.email = "wnameless@gmail.com"
   

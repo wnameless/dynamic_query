@@ -91,11 +91,14 @@
     };
   
     $( '#table2csv' ).on( 'click', function() {
+      var hide_ary = jQuery.parseJSON( sessionStorage.getItem( 'toggle_columns' ) );
       var table = [];
       $( '#dynamic_result_table tr' ).each( function( index ) {
         var row = [];
-        $( this ).children().each( function() {
-          row.push( $( this ).text() );
+        $( this ).children().each( function( index ) {
+          if ( $.inArray( index, hide_ary ) == -1 ) {
+            row.push( $( this ).text() );
+          }
         });
         table.push( row );
       });
