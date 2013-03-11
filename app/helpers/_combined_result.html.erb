@@ -2,71 +2,116 @@
 
 <center id="combined_result">
   
-<table id="combined_result_table" style="text-align: center">
-<% if completed_row %>
-  <tr>
-    <%= completed_row.map { |record|
-      "<th colspan='#{record.attributes.size}'>#{record.table_name}</th>" }.join.html_safe %>
-  </tr>
-  <tr>
-    <%= completed_row.map{ |rec|
-      rec.attributes.map { |k, _| k } }.flatten.map { |col| "<th>#{col}</th>" }.join.html_safe %>
-  </tr>
-<% end %>
-  <% result.each do |row| %>
-  <tr>
-    <% row.map { |rec| rec.attributes.map { |k ,v| v } }.flatten.each do |col| %>
-    <td><%= col %></td>
-    <% end %>
-  </tr>
+  <table id="combined_result_table" style="text-align: center">
+  <% if completed_row %>
+    <tr>
+      <%= completed_row.map { |rec|
+            rec.attributes.map { |k, _| "<th>#{k}</th>" }
+          }.flatten.join.html_safe %>
+    </tr>
   <% end %>
-</table>
-
-<button id="table2csv">Download CSV</button>
-
-<script>
-  var regulateCSVCell = function( cell ) {
-    if ( cell.indexOf( ',' ) == -1 ) {
-      return cell;
-    }
-    return '"' + cell + '"';
-  };
-
-  var ary2CSV = function( ary ) {
-    csv = '';
-    for ( var row in ary ) {
-      for ( var col in ary[row] ) {
-        if ( col == 0 ) {
-          csv += regulateCSVCell( ary[row][col] )
-        } else {
-          csv += ',' + regulateCSVCell( ary[row][col] )
-        }
-      }
-      csv += "\n"
-    }
-    return csv;
-  };
+    <% result.each do |row| %>
+    <tr>
+      <% row.map { |rec| rec.attributes.map { |k ,v| v } }.flatten.each do |col| %>
+      <td><%= col %></td>
+      <% end %>
+    </tr>
+    <% end %>
+  </table>
   
-  var saveCSV = function( csv ) {
-    var href = 'data:application/csv;charset=utf-8,'
-    href += encodeURIComponent( csv );
-    window.open( href );
-  };
-
-  $( '#table2csv' ).on( 'click', function() {
-    var table = [];
-    $( '#combined_result_table tr' ).each( function( index ) {
-      if ( index > 0 ) {
-        var row = [];
-        $( this ).children().each( function() {
-          row.push( $( this ).text() );
-        });
-        table.push( row );
+  <button id="table2csv">Download CSV</button>
+  
+  <script>
+    $( function() {
+      if ( sessionStorage.getItem( 'toggle_columns' ) == null ) {
+        sessionStorage.setItem( 'toggle_columns', '[]' )
       }
+      console.log( sessionStorage.getItem( 'toggle_columns' ) );
+      var hide_ary = jQuery.parseJSON( sessionStorage.getItem( 'toggle_columns' ) );
+      
+      $.each( hide_ary, function( index, value ) {
+        var header = $("#combined_result_table tr > th:eq(" + value + ")");
+        header.attr( 'title', header.text() );
+        header.text( '●' );
+        $('#combined_result_table tr').find( "td:eq(" + value +")" ).each( function() {
+          $( this ).attr( 'title', $( this ).text() );
+          $( this ).text( '' );
+        });
+      });
+      
+      $( '#combined_result_table th' ).each( function( index ) {
+        $( this ).on( 'click', function() {
+          var header = $("#combined_result_table tr > th:eq(" + index + ")");
+          if ( header.text() == '●' ) {
+            var hide_ary = jQuery.parseJSON( sessionStorage.getItem( 'toggle_columns' ) );
+            hide_ary.splice( hide_ary.indexOf(index), 1 );
+            sessionStorage.setItem( 'toggle_columns', JSON.stringify( hide_ary ) )
+            
+            header.text( header.attr( 'title' ) );
+            header.attr( 'title', '' );
+            $('#combined_result_table tr').find( "td:eq(" + index +")" ).each( function() {
+              $( this ).text( $( this ).attr( 'title' ) );
+              $( this ).attr( 'title', '' );
+            });
+          } else {
+            var hide_ary = jQuery.parseJSON( sessionStorage.getItem( 'toggle_columns' ) );
+            hide_ary.push( index );
+            sessionStorage.setItem( 'toggle_columns', JSON.stringify( hide_ary ) )
+            
+            header.attr( 'title', header.text() );
+            header.text( '●' );
+            $('#combined_result_table tr').find( "td:eq(" + index +")" ).each( function() {
+              $( this ).attr( 'title', $( this ).text() );
+              $( this ).text( '' );
+            });
+          }
+        });
+      });
     });
     
-    saveCSV( ary2CSV( table ) );
-  });
-</script>
+    var regulateCSVCell = function( cell ) {
+      if ( cell.indexOf( ',' ) == -1 ) {
+        return cell;
+      }
+      return '"' + cell + '"';
+    };
+  
+    var ary2CSV = function( ary ) {
+      csv = '';
+      for ( var row in ary ) {
+        for ( var col in ary[row] ) {
+          if ( col == 0 ) {
+            csv += regulateCSVCell( ary[row][col] )
+          } else {
+            csv += ',' + regulateCSVCell( ary[row][col] )
+          }
+        }
+        csv += "\n"
+      }
+      return csv;
+    };
+    
+    var saveCSV = function( csv ) {
+      var href = 'data:application/csv;charset=utf-8,'
+      href += encodeURIComponent( csv );
+      window.open( href );
+    };
+  
+    $( '#table2csv' ).on( 'click', function() {
+      var hide_ary = jQuery.parseJSON( sessionStorage.getItem( 'toggle_columns' ) );
+      var table = [];
+      $( '#combined_result_table tr' ).each( function( index ) {
+        var row = [];
+        $( this ).children().each( function( index ) {
+          if ( $.inArray( index, hide_ary ) == -1 ) {
+            row.push( $( this ).text() );
+          }
+        });
+        table.push( row );
+      });
+      
+      saveCSV( ary2CSV( table ) );
+    });
+  </script>
 
 </center>

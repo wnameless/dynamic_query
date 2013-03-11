@@ -27,7 +27,10 @@ module DynamicQuery
         c.keys.each { |k| c[k] = Hash[ c[k].each_slice(2).to_a ] }
         cond << c
       end 
-      cond.map! { |c| c[table.to_s] } if table
+      if table
+        cond.map! { |c| c[table.to_s] }
+        cond.delete nil
+      end
       cond
     end
     

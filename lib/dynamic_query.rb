@@ -10,6 +10,7 @@ module DynamicQuery
               'BETWEEN', 'NOT BETWEEN', 'IS NULL', 'IS NOT NULL']
               
   def dynamic_query(*models, opt)
+    models.flatten!
     DynamicQueryInstance.new(*models, opt)
   end
   
@@ -51,6 +52,66 @@ module DynamicQuery
   def all_columns_in(*models)
     models.map { |m| m.columns.map { |col| "#{m.table_name}.#{col.name}" } }.flatten.join ', '
   end
+  
+  def estimate_total(dq, query)
+    models = dq.models
+    et = models.map { |m| { :table => m.table_name, :total => m.count, :conditioned => conditioned_count(dq, query, m) } }
+    major = et.max_by { |i| i[:total] }
+    et.delete major
+    estimate = major[:conditioned] * et.map { |i| i[:conditioned].to_f / i[:total] }.reduce(:*)
+    estimate = estimate.to_i
+  end
+  
+  def conditioned_count(dq, query, model)
+    conditions = dq.conditions query, model.table_name
+    statement = Querier.statement conditions
+    model.where(statement).count
+  end
+  
+  class Querier
+    STMT_SUFFIX_DICT = {
+      nil           => '= ?',
+      'eq'          => '= ?',
+      'not_eq'      => '!= ?',
+      'gt'          => '> ?',
+      'ge'          => '>= ?',
+      'lt'          => '< ?',
+      'le'          => '<= ?',
+      'in'          => 'IN (?)',
+      'not_in'      => 'NOT IN (?)',
+      'like'        => 'LIKE ?',
+      'not_like'    => 'NOT LIKE ?',
+      'btw'         => 'BETWEEN ? AND ?',
+      'not_btw'     => 'NOT BETWEEN ? AND ?',
+      'between'     => 'BETWEEN ? AND ?',
+      'not_between' => 'NOT BETWEEN ? AND ?',
+      'is'          => 'IS ?',
+      'is_not'      => 'IS NOT ?'
+    }
+    
+    def self.statement(conditions)
+      conditions ||= []
+      statement = []
+      values = []
+      
+      conditions.each do |conds|
+        and_conds = []
+        conds.each do |key, val|
+          col, op = key.to_s.split(/\./)
+          op = STMT_SUFFIX_DICT[op]
+          and_conds << "#{col} #{op}"
+          if ['BETWEEN ? AND ?', 'NOT BETWEEN ? AND ?'].include? op
+            values << val[0] << val[1]
+          else
+            values << val
+          end
+        end
+        statement << and_conds.join(' AND ')
+      end
+      
+      values.unshift statement.map { |s| "(#{s})" }.join(' OR ')
+    end
+  end
     
   class DynamicQueryInstance
     include CombinedQuery, Validator
@@ -70,6 +131,8 @@ module DynamicQuery
         models << opt
         opt = {}
       end
+      
+      @origin_models = models.dup
       
       models.map! do |m|
         if [String, Symbol].include? m.class
@@ -147,6 +210,10 @@ module DynamicQuery
       end
       @columns = translate_columns
       @aliases = used_aliases
+    end
+    
+    def models
+      @origin_models
     end
     
     def panel(query)

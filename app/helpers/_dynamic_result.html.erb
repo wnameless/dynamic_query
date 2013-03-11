@@ -1,4 +1,5 @@
-<center>
+<center id="dynamic_result">
+  
   <table id="dynamic_result_table" style="text-align: center">
     <% if result.first %>
     <tr>
@@ -22,7 +23,7 @@
       console.log( sessionStorage.getItem( 'toggle_columns' ) );
       var hide_ary = jQuery.parseJSON( sessionStorage.getItem( 'toggle_columns' ) );
       
-      $.each( hide_ary, function(index, value) {
+      $.each( hide_ary, function( index, value ) {
         var header = $("#dynamic_result_table tr > th:eq(" + value + ")");
         header.attr( 'title', header.text() );
         header.text( '●' );
@@ -32,7 +33,7 @@
         });
       });
       
-      $( '#dynamic_result_table th' ).each( function(index) {
+      $( '#dynamic_result_table th' ).each( function( index ) {
         $( this ).on( 'click', function() {
           var header = $("#dynamic_result_table tr > th:eq(" + index + ")");
           if ( header.text() == '●' ) {
@@ -106,4 +107,5 @@
       saveCSV( ary2CSV( table ) );
     });
   </script>
+  
 </center>
